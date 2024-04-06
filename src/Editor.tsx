@@ -8,6 +8,16 @@ const Editor: React.FC = () => {
   const [error, setError] = useState<string>('');
   const [loading, setLoading] = useState<boolean>(false);
 
+  const handleTabPress = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
+    if (e.key === 'Tab') {
+      e.preventDefault();
+      const start = e.currentTarget.selectionStart;
+      const end = e.currentTarget.selectionEnd;
+      setCode(code.substring(0, start) + ' '.repeat(4) + code.substring(end));
+      e.currentTarget.selectionStart = e.currentTarget.selectionEnd = start + 4;
+    }
+  };
+
   const executeCode = async () => {
     setLoading(true);
     setError('');
@@ -65,15 +75,16 @@ const Editor: React.FC = () => {
           </div>
         </div>
         <textarea
-          className="flex-1 p-4 mt-4 border rounded-md resize-none focus:outline-none bg-gray-900 text-white w-full h-[60vh]"
+          className="flex-1 p-3 mt-2 border rounded-md resize-none focus:outline-none bg-gray-900 text-white w-full h-[60vh]"
           placeholder="Enter your code here..."
           value={code}
           onChange={(e) => setCode(e.target.value)}
+          onKeyDown={handleTabPress}
         ></textarea>
       </div>
       <div className="flex flex-col overflow-auto flex-1 border bg-gray-800">
-        <div className="p-4 text-white">Output:</div>
-        <div className="flex-1 p-4 overflow-auto">{error || output}</div>
+        <div className="pt-2 px-3 text-lg text-yellow-300 underline">Output</div>
+        <div className={`flex-1 p-4 overflow-auto ${!error ? "text-white" : "text-red-400"} whitespace-pre-wrap`}>{error || output}</div>
       </div>
     </div>
   );
